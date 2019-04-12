@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -16,8 +15,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.lhk.demo.sqlite.Constant;
-
-import java.io.File;
+import com.lhk.demo.sqlite.DBManager;
+import com.lhk.demo.sqlite.DBHelper;
 
 /**
  * Created by user on 2019/3/28.
@@ -27,11 +26,13 @@ public class ListActivity extends AppCompatActivity {
 
     private ListView listView;
     private SQLiteDatabase db;
+    private DBHelper mHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+        mHelper = DBManager.getInstance(this);
         listView = findViewById(R.id.listView);
 
         /**
@@ -40,10 +41,12 @@ public class ListActivity extends AppCompatActivity {
          * factory 游标工厂
          * flags 表示打开数据库的操作模式
          */
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"info.db";
-        db = SQLiteDatabase.openDatabase(path,null,SQLiteDatabase.OPEN_READONLY);
-        Cursor cursor = db.rawQuery("select * from "+ Constant.TABLE_NAME,null);
-        db.close();
+//        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"info.db";
+//        db = SQLiteDatabase.openDatabase(path,null,SQLiteDatabase.OPEN_READONLY);
+
+        db = mHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from "+ Constant.TableUser.TABLE_NAME,null);
+
 
         /**
          * SimpleCursorAdapter(Context context, int layout, Cursor c, String[] from, int[] to, int flags)
@@ -55,10 +58,12 @@ public class ListActivity extends AppCompatActivity {
          * flags 设置适配器的标记
          */
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,R.layout.item,cursor
-                ,new String[]{Constant._ID,Constant.NAME,Constant.AGE}
+                ,new String[]{Constant.TableUser._ID,Constant.TableUser.NAME,Constant.TableUser.AGE}
                 ,new int[]{R.id.tv_id,R.id.tv_name,R.id.tv_age}
                 ,SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         listView.setAdapter(adapter);
+
+        db.close();
     }
 
     /**
@@ -101,9 +106,9 @@ public class ListActivity extends AppCompatActivity {
             TextView tv_name = view.findViewById(R.id.tv_name);
             TextView tv_age = view.findViewById(R.id.tv_age);
 
-            tv_id.setText(cursor.getInt(cursor.getColumnIndex(Constant._ID))+"");
-            tv_name.setText(cursor.getString(cursor.getColumnIndex(Constant.NAME)));
-            tv_age.setText(cursor.getInt(cursor.getColumnIndex(Constant.AGE))+"");
+            tv_id.setText(cursor.getInt(cursor.getColumnIndex(Constant.TableUser._ID))+"");
+            tv_name.setText(cursor.getString(cursor.getColumnIndex(Constant.TableUser.NAME)));
+            tv_age.setText(cursor.getInt(cursor.getColumnIndex(Constant.TableUser.AGE))+"");
         }
     }
 }

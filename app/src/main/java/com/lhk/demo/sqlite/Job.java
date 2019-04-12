@@ -1,12 +1,8 @@
 package com.lhk.demo.sqlite;
 
-/**
- * Created by user on 2019/3/27.
- */
-
-public class Person {
+public class Job {
     private int _id;
-    private String name;
+    private String job;
     private int age;
 
     public int get_id() {
@@ -17,12 +13,12 @@ public class Person {
         this._id = _id;
     }
 
-    public String getName() {
-        return name;
+    public String getJob() {
+        return job;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setJob(String job) {
+        this.job = job;
     }
 
     public int getAge() {

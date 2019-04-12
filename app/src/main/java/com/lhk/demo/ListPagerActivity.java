@@ -1,10 +1,8 @@
 package com.lhk.demo;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -12,16 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.lhk.demo.sqlite.Constant;
 import com.lhk.demo.sqlite.DBManager;
-import com.lhk.demo.sqlite.Person;
+import com.lhk.demo.sqlite.DBHelper;
+import com.lhk.demo.sqlite.User;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +30,12 @@ public class ListPagerActivity extends AppCompatActivity {
 
     private ListView listView;
     private SQLiteDatabase db;
+    private DBHelper mHelper;
     private int total = 0;
     private int pageSize = 10;
     private int pageNum;//表示总页码
     private int currentPage = 1;//当前页码
-    private List<Person> totalList = new ArrayList<>();//表示数据源
+    private List<User> totalList = new ArrayList<>();//表示数据源
     private MyAdapter adapter;
     private boolean isDivPage;//是否分页
 
@@ -46,6 +43,7 @@ public class ListPagerActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+        mHelper = DBManager.getInstance(this);
         listView = findViewById(R.id.listView);
 
         /**
@@ -54,14 +52,16 @@ public class ListPagerActivity extends AppCompatActivity {
          * factory 游标工厂
          * flags 表示打开数据库的操作模式
          */
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"info.db";
-        db = SQLiteDatabase.openDatabase(path,null,SQLiteDatabase.OPEN_READONLY);
+//        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"info.db";
+//        db = SQLiteDatabase.openDatabase(path,null,SQLiteDatabase.OPEN_READONLY);
+
+        db = mHelper.getReadableDatabase();
         //获取数据表数据总条目
-        total = DBManager.getDataTotal(db,Constant.TABLE_NAME);
+        total = DBManager.getDataTotal(db,Constant.TableUser.TABLE_NAME);
         //根据总条目与每页展示数据条目 获得总页数
         pageNum = (int) Math.ceil(total/(double)pageSize);
         if (currentPage==1){
-            totalList = DBManager.getListByCurrentPage(db,Constant.TABLE_NAME,currentPage,pageSize);
+            totalList = DBManager.getListByCurrentPage(db,Constant.TableUser.TABLE_NAME,currentPage,pageSize);
         }
         adapter = new MyAdapter(this,totalList);
         listView.setAdapter(adapter);
@@ -71,7 +71,7 @@ public class ListPagerActivity extends AppCompatActivity {
                 if (isDivPage && AbsListView.OnScrollListener.SCROLL_STATE_IDLE==scrollState){
                     if (currentPage<pageNum){
                         currentPage++;
-                        totalList.addAll(DBManager.getListByCurrentPage(db,Constant.TABLE_NAME,currentPage,pageSize));
+                        totalList.addAll(DBManager.getListByCurrentPage(db,Constant.TableUser.TABLE_NAME,currentPage,pageSize));
                         adapter.notifyDataSetChanged();
                     }
                 }
@@ -88,9 +88,9 @@ public class ListPagerActivity extends AppCompatActivity {
     public static class MyAdapter extends BaseAdapter{
 
         private Context context;
-        private List<Person> list;
+        private List<User> list;
 
-        public MyAdapter(Context context, List<Person> list) {
+        public MyAdapter(Context context, List<User> list) {
             this.context = context;
             this.list = list;
         }

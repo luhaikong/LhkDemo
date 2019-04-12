@@ -12,14 +12,14 @@ import android.widget.Toast;
 
 import com.lhk.demo.sqlite.Constant;
 import com.lhk.demo.sqlite.DBManager;
-import com.lhk.demo.sqlite.MySqLiteHelper;
-import com.lhk.demo.sqlite.Person;
+import com.lhk.demo.sqlite.DBHelper;
+import com.lhk.demo.sqlite.User;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MySqLiteHelper mHelper;
+    private DBHelper mHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
          */
         SQLiteDatabase db = mHelper.getWritableDatabase();
         for (int i=1;i<=30;i++){
-            String sql = "insert into "+Constant.TABLE_NAME+" values("+i+",'zhangsan"+i+"',20)";
+            String sql = "insert into "+Constant.TableUser.TABLE_NAME+" values("+i+",'zhangsan"+i+"',20)";
             db.execSQL(sql);
         }
         db.close();
@@ -59,10 +59,10 @@ public class MainActivity extends AppCompatActivity {
                  * 返回值 long 表示插入数据的列数
                  */
                 ContentValues values = new ContentValues();
-                values.put(Constant._ID,3);
-                values.put(Constant.NAME,"zhansan");
-                values.put(Constant.AGE,18);
-                long result = db.insert(Constant.TABLE_NAME,null,values);
+                values.put(Constant.TableUser._ID,3);
+                values.put(Constant.TableUser.NAME,"zhansan");
+                values.put(Constant.TableUser.AGE,18);
+                long result = db.insert(Constant.TableUser.TABLE_NAME,null,values);
                 if (result>0){
                     Toast.makeText(MainActivity.this,"插入数据成功！",Toast.LENGTH_SHORT).show();
                 } else {
@@ -80,9 +80,9 @@ public class MainActivity extends AppCompatActivity {
                  * 返回值 int 表示修改数据的条数
                  */
                 ContentValues valuesUpdate = new ContentValues();
-                valuesUpdate.put(Constant.NAME,"xiaomi");
-                //int count = db.update(Constant.TABLE_NAME,valuesUpdate,Constant._ID+"=3",null);
-                int count = db.update(Constant.TABLE_NAME,valuesUpdate,Constant._ID+"=?",new String[]{"3"});
+                valuesUpdate.put(Constant.TableUser.NAME,"xiaomi");
+                //int count = db.update(Constant.TableUser.TABLE_NAME,valuesUpdate,Constant.TableUser._ID+"=3",null);
+                int count = db.update(Constant.TableUser.TABLE_NAME,valuesUpdate,Constant.TableUser._ID+"=?",new String[]{"3"});
                 if (count>0){
                     Toast.makeText(MainActivity.this,"修改数据成功！",Toast.LENGTH_SHORT).show();
                 } else {
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                  * whereClause 表示删除的条件
                  * whereArgs 表示删除条件的占位符
                  */
-                int countDel = db.delete(Constant.TABLE_NAME,Constant._ID+"=?",new String[]{"1"});
+                int countDel = db.delete(Constant.TableUser.TABLE_NAME,Constant.TableUser._ID+"=?",new String[]{"1"});
                 if (countDel>0){
                     Toast.makeText(MainActivity.this,"删除数据成功！",Toast.LENGTH_SHORT).show();
                 } else {
@@ -116,12 +116,12 @@ public class MainActivity extends AppCompatActivity {
                  * having 表示筛选条件 having子句
                  * orderBy 表示排序条件 orderBy子句
                  */
-                Cursor cursor = db.query(Constant.TABLE_NAME,null
-                        ,Constant._ID+">?",new String[]{"10"}
+                Cursor cursor = db.query(Constant.TableUser.TABLE_NAME,null
+                        ,Constant.TableUser._ID+">?",new String[]{"10"}
                         ,null,null
-                        ,Constant._ID+" desc");
-                List<Person> list = DBManager.cursorToList(cursor);
-                for (Person p:list){
+                        ,Constant.TableUser._ID+" desc");
+                List<User> list = DBManager.cursorToList(cursor);
+                for (User p:list){
                     Log.i("tag",p.getName());
                 }
                 db.close();
@@ -133,40 +133,40 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         switch (view.getId()){
             case R.id.btn_insert:
-                String sql = "insert into "+ Constant.TABLE_NAME+" values(1,'张三',20)";
+                String sql = "insert into "+ Constant.TableUser.TABLE_NAME+" values(1,'张三',20)";
                 DBManager.execSQL(db,sql);
-                String sql2 = "insert into "+ Constant.TABLE_NAME+" values(2,'李四',30)";
+                String sql2 = "insert into "+ Constant.TableUser.TABLE_NAME+" values(2,'李四',30)";
                 DBManager.execSQL(db,sql2);
                 db.close();
                 break;
             case R.id.btn_update:
-                String updateSql = "update"+Constant.TABLE_NAME+" set"+Constant.NAME+"='xiaoming' where "+Constant._ID+"=1";
+                String updateSql = "update "+Constant.TableUser.TABLE_NAME+" set "+Constant.TableUser.NAME+"='xiaoming' where "+Constant.TableUser._ID+"=1";
                 DBManager.execSQL(db,updateSql);
                 db.close();
                 break;
             case R.id.btn_delete:
-                String delSql = "delete from "+Constant.TABLE_NAME+" where "+Constant._ID+"=2";
+                String delSql = "delete from "+Constant.TableUser.TABLE_NAME+" where "+Constant.TableUser._ID+"=2";
                 DBManager.execSQL(db,delSql);
                 db.close();
                 break;
             case R.id.btn_query:
-                String querySql = "select * from "+Constant.TABLE_NAME;
+                String querySql = "select * from "+Constant.TableUser.TABLE_NAME;
                 Cursor cursor = DBManager.selectDataBySql(db,querySql,null);
-                List<Person> list = DBManager.cursorToList(cursor);
-                for (Person p:list){
+                List<User> list = DBManager.cursorToList(cursor);
+                for (User p:list){
                     Log.i("tag",p.getName());
                 }
                 db.close();
                 break;
             case R.id.btn_tolist:
-                Intent intent = new Intent(MainActivity.this, android.app.ListActivity.class);
+                Intent intent = new Intent(MainActivity.this, ListActivity.class);
                 startActivity(intent);
                 break;
             case R.id.btn_insertDatas:
                 //1.数据库显示开启事务
                 db.beginTransaction();
                 for (int i=1;i<100;i++){
-                    String sq = "insert into "+Constant.TABLE_NAME+" values("+i+",'xiaomu"+i+"',18)";
+                    String sq = "insert into "+Constant.TableUser.TABLE_NAME+" values("+i+",'xiaomu"+i+"',18)";
                     db.execSQL(sq);
                 }
                 //2.提交当前事务

@@ -13,12 +13,12 @@ import java.util.List;
  */
 
 public class DBManager {
-    private static MySqLiteHelper helper;
-    public static MySqLiteHelper getInstance(Context context){
+    private static DBHelper helper;
+    public static DBHelper getInstance(Context context){
         if (helper==null){
-            synchronized (MySqLiteHelper.class){
+            synchronized (DBHelper.class){
                 if (helper==null){
-                    helper = new MySqLiteHelper(context);
+                    helper = new DBHelper(context);
                 }
             }
         }
@@ -47,7 +47,7 @@ public class DBManager {
      * @param currentPage
      * @return
      */
-    public static List<Person> getListByCurrentPage(SQLiteDatabase db,String tableName,int currentPage,int pageSize){
+    public static List<User> getListByCurrentPage(SQLiteDatabase db, String tableName, int currentPage, int pageSize){
         Cursor cursor = null;
         int index = (currentPage-1)*pageSize;
         if (db!=null){
@@ -79,24 +79,24 @@ public class DBManager {
      * @param cursor
      * @return
      */
-    public static List<Person> cursorToList(Cursor cursor){
-        List<Person> list = new ArrayList<>();
+    public static List<User> cursorToList(Cursor cursor){
+        List<User> list = new ArrayList<>();
         //cursor.moveToNext() 如果返回true表示下一条记录存在，否则表示游标中数据读取完毕
         while (cursor.moveToNext()){
             //getColumnIndex 根据参数中指定的字段名称获取字段下标
-            int columnIndex = cursor.getColumnIndex(Constant._ID);
+            int columnIndex = cursor.getColumnIndex(Constant.TableUser._ID);
             //getInt 根据参数中指定的字段下标获取对应int类型的数据
             int _id = cursor.getInt(columnIndex);
 
-            String name = cursor.getString(cursor.getColumnIndex(Constant.NAME));
-            int age = cursor.getInt(cursor.getColumnIndex(Constant.AGE));
+            String name = cursor.getString(cursor.getColumnIndex(Constant.TableUser.NAME));
+            int age = cursor.getInt(cursor.getColumnIndex(Constant.TableUser.AGE));
 
-            Person person = new Person();
-            person.set_id(_id);
-            person.setName(name);
-            person.setAge(age);
+            User user = new User();
+            user.set_id(_id);
+            user.setName(name);
+            user.setAge(age);
 
-            list.add(person);
+            list.add(user);
         }
         return list;
     }

@@ -9,9 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by user on 2019/3/27.
  */
 
-public class MySqLiteHelper extends SQLiteOpenHelper{
+public class DBHelper extends SQLiteOpenHelper{
 
-    public MySqLiteHelper(Context context){
+    public DBHelper(Context context){
         super(context,Constant.DATABASE_NAME,null,Constant.DATABASE_VERSION);
     }
 
@@ -22,25 +22,36 @@ public class MySqLiteHelper extends SQLiteOpenHelper{
      * @param factory 游标工厂
      * @param version 表示创建数据库的版本 >=1
      */
-    public MySqLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
 
-    public MySqLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
+    public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
         super(context, name, factory, version, errorHandler);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "create table "+Constant.TABLE_NAME+"("+Constant._ID+" Integer primary key" +
-                ","+Constant.NAME+" varchar(10)" +
-                ","+Constant.AGE+" Integer)";
+        String sql = "create table "+Constant.TableUser.TABLE_NAME+"("+Constant.TableUser._ID+" Integer primary key" +
+                ","+Constant.TableUser.NAME+" varchar(10)" +
+                ","+Constant.TableUser.AGE+" Integer)";
         db.execSQL(sql);
+
+        String sql1 = "create table "+Constant.TableJob.TABLE_NAME+"("+Constant.TableJob._ID+" Integer primary key" +
+                ","+Constant.TableJob.JOB+" varchar(10))";
+        db.execSQL(sql1);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        // 使用for实现跨版本升级数据库
+        for (int ver = oldVersion; ver < newVersion; ver++) {
+            switch (ver) {
 
+                default:
+                    break;
+            }
+        }
     }
 
     @Override
