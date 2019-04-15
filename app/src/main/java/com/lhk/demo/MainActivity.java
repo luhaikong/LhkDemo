@@ -28,25 +28,6 @@ public class MainActivity extends AppCompatActivity {
         mHelper = DBManager.getInstance(this);
     }
 
-    /**
-     * 点击按钮创建数据库
-     * @param view
-     */
-    public void createDb(View view) {
-        /**
-         * getReadableDatabase()、getWritableDatabase()创建或打开数据库
-         * 如果数据库不存在则创建数据库，如果数据库存在直接打开数据库
-         * 默认情况下两个函数都表示打开或者创建可读可写数据库
-         * 如果磁盘已满或者是数据库本身权限等情况下getReadableDatabase()打开的是只读数据库
-         */
-        SQLiteDatabase db = mHelper.getWritableDatabase();
-        for (int i=1;i<=30;i++){
-            String sql = "insert into "+Constant.TableUser.TABLE_NAME+" values("+i+",'zhangsan"+i+"',20)";
-            db.execSQL(sql);
-        }
-        db.close();
-    }
-
     public void click1(View view) {
         SQLiteDatabase db = mHelper.getWritableDatabase();
         switch (view.getId()){
@@ -130,14 +111,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void click(View view) {
+        /**
+         * getReadableDatabase()、getWritableDatabase()创建或打开数据库
+         * 如果数据库不存在则创建数据库，如果数据库存在直接打开数据库
+         * 默认情况下两个函数都表示打开或者创建可读可写数据库
+         * 如果磁盘已满或者是数据库本身权限等情况下getReadableDatabase()打开的是只读数据库
+         */
         SQLiteDatabase db = mHelper.getWritableDatabase();
         switch (view.getId()){
             case R.id.btn_insert:
-                String sql = "insert into "+ Constant.TableUser.TABLE_NAME+" values(1,'张三',20)";
-                DBManager.execSQL(db,sql);
-                String sql2 = "insert into "+ Constant.TableUser.TABLE_NAME+" values(2,'李四',30)";
-                DBManager.execSQL(db,sql2);
-                db.close();
+                try {
+                    String sql = "insert into "+ Constant.TableUser.TABLE_NAME+" values(1,'张三',20)";
+                    DBManager.execSQL(db,sql);
+
+                    String sql2 = "insert into "+ Constant.TableUser.TABLE_NAME+" values(2,'李四',30)";
+                    DBManager.execSQL(db,sql2);
+                } catch (Exception e){
+                    Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_LONG).show();
+                } finally {
+                    db.close();
+                }
                 break;
             case R.id.btn_update:
                 String updateSql = "update "+Constant.TableUser.TABLE_NAME+" set "+Constant.TableUser.NAME+"='xiaoming' where "+Constant.TableUser._ID+"=1";
